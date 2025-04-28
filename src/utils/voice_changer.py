@@ -5,18 +5,18 @@ from IPython.display import Audio, display
 import io
 
 class VoiceChanger:
-    def __init__(self, config_path="configs/voice_changer_config.yaml"):
+    def __init__(self, api_key, config_path="configs/voice_changer_config.yaml"):
+        self.api_key = api_key
         self.config = self.load_config(config_path)
 
     def load_config(self, config_path):
         with open(config_path, "r") as f:
             config = yaml.safe_load(f)
         
-        api_key = config.get("api_key")
-        if api_key:
+        if self.api_key:
             if "headers" not in config:
                 config["headers"] = {}
-            config["headers"]["Authorization"] = f"Bearer {api_key}"
+            config["headers"]["Authorization"] = f"Bearer {self.api_key}"
         
         return config
 
@@ -42,11 +42,11 @@ class VoiceChanger:
         audio, samplerate = sf.read(audio_path)
         display(Audio(audio, rate=samplerate))
 
-
     def run_pipeline(self, input_audio_path, output_audio_path):
         audio_changed = self.change_voice(input_audio_path)
         self.save_audio(audio_changed, output_audio_path)
         print("✅ Voice transformation successful.")
         self.play_audio(output_audio_path)
+
 
         
